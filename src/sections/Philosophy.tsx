@@ -1,0 +1,47 @@
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../contexts/LanguageContext'
+
+gsap.registerPlugin(ScrollTrigger)
+
+export default function Philosophy() {
+  const { t } = useLanguage()
+  const sectionRef = useRef<HTMLElement>(null)
+  const textRef = useRef<HTMLParagraphElement>(null)
+  const tagsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    const text = textRef.current
+    const tagsEl = tagsRef.current
+    if (!section || !text || !tagsEl) return
+
+    const ctx = gsap.context(() => {
+      gsap.from(text, { y: 60, opacity: 0, duration: 1.2, ease: 'power3.out',
+        scrollTrigger: { trigger: section, start: 'top 75%', once: true } })
+      gsap.from(tagsEl.children, { y: 30, opacity: 0, duration: 0.8, stagger: 0.15, ease: 'power3.out',
+        scrollTrigger: { trigger: section, start: 'top 65%', once: true } })
+    }, section)
+
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={sectionRef} style={{ backgroundColor: '#ffffff', padding: '160px clamp(20px, 4vw, 60px)' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '80px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        <p ref={textRef} style={{ flex: '1 1 700px', fontSize: 'clamp(28px, 4vw, 60px)', fontWeight: 500, lineHeight: 1.35, letterSpacing: '0.01em', color: '#000000', maxWidth: '1200px', fontFamily: "'Thmanya', sans-serif" }}>
+          {t('philosophy.text')}
+        </p>
+
+        <div ref={tagsRef} style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '12px' }}>
+          {[t('philosophy.tag1'), t('philosophy.tag2'), t('philosophy.tag3')].map((tag) => (
+            <span key={tag} style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.18em', color: '#000000', padding: '10px 18px', border: '1px solid #1a1a1a', whiteSpace: 'nowrap', textTransform: 'uppercase' }}>
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
